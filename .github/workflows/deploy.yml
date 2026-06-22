@@ -1,31 +1,13 @@
-name: Deploy Pages
+name: Deploy Pages (no-op)
 
+# O GitHub Pages deste repo publica direto da branch main (root),
+# em Settings → Pages → Source: "Deploy from a branch".
+# Este workflow fica inerte para não conflitar com o deploy por branch.
 on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
+  workflow_dispatch: {}
 
 jobs:
-  deploy:
+  noop:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-      - id: cfg
-        uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - run: echo "Pages publica direto da branch main — nada a fazer aqui."
