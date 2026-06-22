@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#15101a" />
+  <meta name="description" content="Galeria de cartões de visita digitais (bio link) para docerias — 5 modelos glassmorphism." />
+  <title>Cartões Bio-Link · Docerias</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" referrerpolicy="no-referrer" />
+  <style>
+    :root{
+      --text:#f4f1f6; --text-dim:#b6aec6;
+      --glass-bg:rgba(255,255,255,0.06); --glass-brd:rgba(255,255,255,0.14);
+      --ease:cubic-bezier(0.22,1,0.36,1);
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      font-family:'Poppins',system-ui,sans-serif;color:var(--text);
+      min-height:100dvh;padding:40px 18px 56px;position:relative;overflow-x:hidden;
+      background:#0f0c14;
+      background-image:
+        radial-gradient(circle at 18% 8%, rgba(255,123,169,0.20), transparent 42%),
+        radial-gradient(circle at 85% 12%, rgba(255,140,102,0.18), transparent 42%),
+        radial-gradient(circle at 50% 100%, rgba(155,211,199,0.12), transparent 50%),
+        linear-gradient(180deg,#15101a 0%,#0f0c14 60%,#0b090f 100%);
+    }
+    .wrap{max-width:1040px;margin:0 auto;}
+    header.top{text-align:center;margin-bottom:34px;}
+    .top__eyebrow{font-size:.72rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#e9b8d6;}
+    .top__title{font-size:clamp(1.9rem,6vw,3rem);font-weight:700;letter-spacing:-.5px;margin-top:8px;line-height:1.1;}
+    .top__title span{background:linear-gradient(135deg,#FF9BC4,#FF8C66 55%,#FFC36E);-webkit-background-clip:text;background-clip:text;color:transparent;}
+    .top__sub{margin-top:12px;color:var(--text-dim);font-weight:300;max-width:46ch;margin-inline:auto;font-size:.96rem;}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px;}
+    .card{
+      display:block;text-decoration:none;color:inherit;position:relative;overflow:hidden;
+      border-radius:22px;padding:20px 20px 22px;
+      background:var(--glass-bg);-webkit-backdrop-filter:blur(16px) saturate(140%);backdrop-filter:blur(16px) saturate(140%);
+      border:1px solid var(--glass-brd);
+      box-shadow:0 24px 50px -22px rgba(0,0,0,.7);
+      transition:transform .3s var(--ease),box-shadow .3s var(--ease),border-color .3s var(--ease);
+    }
+    .card::before{content:"";position:absolute;inset:0;border-radius:22px;padding:1px;
+      background:linear-gradient(135deg,var(--accent),transparent 60%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.7;pointer-events:none;}
+    .card:hover{transform:translateY(-6px);box-shadow:0 30px 60px -20px rgba(0,0,0,.8);border-color:rgba(255,255,255,.3);}
+    .card__icon{
+      width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:1.5rem;margin-bottom:16px;
+      background:linear-gradient(135deg,var(--accent-soft),var(--accent));box-shadow:0 10px 24px -10px var(--accent);
+    }
+    .card__brand{font-size:1.18rem;font-weight:600;letter-spacing:.2px;}
+    .card__desc{margin-top:6px;font-size:.82rem;color:var(--text-dim);font-weight:300;line-height:1.45;min-height:2.6em;}
+    .card__tag{display:inline-block;margin-top:12px;font-size:.64rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.08);color:var(--accent-soft);border:1px solid rgba(255,255,255,.1);}
+    .card__cta{margin-top:16px;display:flex;align-items:center;justify-content:space-between;font-size:.82rem;font-weight:600;color:#fff;}
+    .card__cta i{transition:transform .3s var(--ease);}
+    .card:hover .card__cta i{transform:translateX(5px);}
+
+    .c1{--accent:#B76E79;--accent-soft:#E8B4B8;}
+    .c2{--accent:#FF7BA9;--accent-soft:#FF9BC4;}
+    .c3{--accent:#C68643;--accent-soft:#E0A458;}
+    .c4{--accent:#C0633F;--accent-soft:#D17A52;}
+    .c5{--accent:#FF8C66;--accent-soft:#FFA887;}
+
+    footer.bottom{margin-top:40px;text-align:center;color:rgba(182,174,198,.55);font-size:.74rem;}
+    footer.bottom a{color:#e9b8d6;text-decoration:none;}
+    footer.bottom a:hover{text-decoration:underline;}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+    .reveal{opacity:0;animation:fadeUp .7s var(--ease) forwards;}
+    .reveal[data-d="1"]{animation-delay:.05s;}
+    .reveal[data-d="2"]{animation-delay:.12s;}
+    .reveal[data-d="3"]{animation-delay:.19s;}
+    .reveal[data-d="4"]{animation-delay:.26s;}
+    .reveal[data-d="5"]{animation-delay:.33s;}
+    @media (prefers-reduced-motion: reduce){.reveal{animation:none;opacity:1;}*{transition:none!important;}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top reveal" data-d="1">
+      <p class="top__eyebrow">Bio-Link · Docerias</p>
+      <h1 class="top__title">Cartões de Visita <span>Digitais</span></h1>
+      <p class="top__sub">Cinco modelos de cartão interativo com glassmorphism, otimizados para vender doces via WhatsApp. Toque para abrir.</p>
+    </header>
+
+    <section class="grid">
+      <a class="card c1 reveal" data-d="2" href="docerias/index-01.html" target="_blank" rel="noopener">
+        <div class="card__icon"><i class="fa-solid fa-cookie-bite"></i></div>
+        <h2 class="card__brand">La Pâtisserie</h2>
+        <p class="card__desc">Pâtisserie elegante — macarons e petit fours artesanais.</p>
+        <span class="card__tag">Rose-gold</span>
+        <div class="card__cta"><span>Abrir cartão</span><i class="fa-solid fa-arrow-right"></i></div>
+      </a>
+
+      <a class="card c2 reveal" data-d="2" href="docerias/index-02.html" target="_blank" rel="noopener">
+        <div class="card__icon"><i class="fa-solid fa-cake-candles"></i></div>
+        <h2 class="card__brand">Doce &amp; Cia</h2>
+        <p class="card__desc">Brigadeiros, bolos e docinhos — vibe fofo pastel e divertida.</p>
+        <span class="card__tag">Pastel Pink</span>
+        <div class="card__cta"><span>Abrir cartão</span><i class="fa-solid fa-arrow-right"></i></div>
+      </a>
+
+      <a class="card c3 reveal" data-d="3" href="docerias/index-03.html" target="_blank" rel="noopener">
+        <div class="card__icon"><i class="fa-solid fa-mug-hot"></i></div>
+        <h2 class="card__brand">Brigadeiria Noir</h2>
+        <p class="card__desc">Brigadeiros gourmet — chocolate premium, estética escura.</p>
+        <span class="card__tag">Cacau Gourmet</span>
+        <div class="card__cta"><span>Abrir cartão</span><i class="fa-solid fa-arrow-right"></i></div>
+      </a>
+
+      <a class="card c4 reveal" data-d="4" href="docerias/index-04.html" target="_blank" rel="noopener">
+        <div class="card__icon"><i class="fa-solid fa-bread-slice"></i></div>
+        <h2 class="card__brand">Doce da Vovó</h2>
+        <p class="card__desc">Bolos caseiros com receitas de família — vintage rústico.</p>
+        <span class="card__tag">Terracota Vintage</span>
+        <div class="card__cta"><span>Abrir cartão</span><i class="fa-solid fa-arrow-right"></i></div>
+      </a>
+
+      <a class="card c5 reveal" data-d="5" href="docerias/index-05.html" target="_blank" rel="noopener">
+        <div class="card__icon"><i class="fa-solid fa-ice-cream"></i></div>
+        <h2 class="card__brand">Gelato &amp; Co</h2>
+        <p class="card__desc">Sorvetes artesanais e paletas — moderno, arejado e fresco.</p>
+        <span class="card__tag">Coral Moderno</span>
+        <div class="card__cta"><span>Abrir cartão</span><i class="fa-solid fa-arrow-right"></i></div>
+      </a>
+    </section>
+
+    <footer class="bottom reveal" data-d="5">
+      <p>© 2026 · Galeria de cartões bio-link · Gerado com <a href="https://github.com/Victor-Queiroz-1/cartoes-bio-link" target="_blank" rel="noopener">GitHub Pages</a></p>
+    </footer>
+  </div>
+</body>
+</html>
