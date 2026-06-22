@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#FFE3EE" />
+  <meta name="description" content="Cartão de visita digital — Doce & Cia · Brigadeiros, Bolos e Docinhos." />
+  <title>Doce & Cia · Brigadeiros · Bolos · Docinhos</title>
+
+  <!-- Tipografia -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Ícones (FontAwesome 6) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        referrerpolicy="no-referrer" />
+
+  <style>
+    /* ============================================================
+       VARIÁVEIS & RESET
+    ============================================================ */
+    :root {
+      --pink:        #FF7BA9;
+      --pink-soft:   #FF9BC4;
+      --pink-deep:   #E85F92;
+      --mint:        #9BD3C7;
+      --cream:       #FFF4F7;
+      --text:        #5A3D43;
+      --text-dim:    #8A6A70;
+      --glass-bg:    rgba(255, 255, 255, 0.55);
+      --glass-brd:   rgba(255, 255, 255, 0.7);
+      --radius:      30px;
+      --ease:        cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: 'Nunito', system-ui, sans-serif;
+      color: var(--text);
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* padding-bottom extra para a barra sticky mobile */
+      padding:
+        calc(env(safe-area-inset-top) + 18px) 16px
+        calc(env(safe-area-inset-bottom) + 86px);
+      position: relative;
+      overflow-x: hidden;
+      background: #FFE3EE;
+    }
+
+    /* ============================================================
+       BACKGROUND FIXO (imagem + fallback gradiente + overlay)
+    ============================================================ */
+    .bg {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background-color: #FFE3EE;
+      background-image:
+        radial-gradient(circle at 50% 0%, rgba(255, 123, 169, 0.18), transparent 55%),
+        linear-gradient(180deg, #FFE3EE 0%, #FCEADE 45%, #E8F7F2 100%);
+    }
+    .bg__img {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-size: cover;
+      background-position: center;
+      filter: saturate(110%);
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+    .bg__img.is-loaded { opacity: 1; }
+    .bg__overlay {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.3) 55%, rgba(255,255,255,0.3) 100%);
+      pointer-events: none;
+    }
+
+    /* ============================================================
+       CARD PRINCIPAL (GLASS)
+    ============================================================ */
+    .card {
+      width: min(92vw, 440px);
+      padding: 22px 20px 22px;
+      border-radius: var(--radius);
+      background: var(--glass-bg);
+      -webkit-backdrop-filter: blur(16px) saturate(140%);
+      backdrop-filter: blur(16px) saturate(140%);
+      border: 1px solid var(--glass-brd);
+      box-shadow:
+        0 24px 60px -18px rgba(255, 123, 169, 0.35),
+        0 2px 0 0 rgba(255, 255, 255, 0.5) inset,
+        0 -2px 24px -10px rgba(155, 211, 199, 0.18) inset;
+      position: relative;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 18%; right: 18%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
+      opacity: 0.8;
+    }
+
+    /* Espaçamento padrão entre seções */
+    .section { margin-top: 16px; }
+
+    /* ============================================================
+       TOPBAR COMPACTA (avatar + nome + pill de status)
+    ============================================================ */
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .topbar__avatar {
+      width: 54px;
+      height: 54px;
+      flex: 0 0 54px;
+      border-radius: 50%;
+      position: relative;
+      padding: 3px;
+      background: linear-gradient(145deg, var(--pink-soft), var(--pink), var(--pink-deep));
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.6),
+        0 6px 16px -6px rgba(255, 123, 169, 0.55);
+    }
+    .topbar__avatar img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      background: var(--cream);
+    }
+    .topbar__avatar .initials {
+      display: none;
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      background: var(--cream);
+      color: var(--pink);
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      align-items: center;
+      justify-content: center;
+    }
+    .topbar__avatar.no-img img { display: none; }
+    .topbar__avatar.no-img .initials { display: flex; }
+    .topbar__info { flex: 1; min-width: 0; }
+    .topbar__name {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      line-height: 1.15;
+      color: var(--text);
+    }
+    .topbar__tagline {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--pink);
+      margin-top: 3px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      border: 1px solid rgba(255,255,255,0.7);
+      transition: background .25s var(--ease), color .25s var(--ease);
+    }
+    .pill--open {
+      background: rgba(155, 211, 199, 0.35);
+      color: #2C7A6A;
+    }
+    .pill--closed {
+      background: rgba(255, 200, 200, 0.45);
+      color: #B23A48;
+    }
+    .pill__dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.45);
+    }
+
+    /* ============================================================
+       HERO PRODUTO DA SEMANA
+    ============================================================ */
+    .hero {
+      margin-top: 18px;
+      border-radius: 24px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(255,255,255,0.8);
+      box-shadow: 0 14px 30px -16px rgba(255, 123, 169, 0.45);
+      background: var(--cream);
+    }
+    .hero__media {
+      position: relative;
+      height: 180px;
+      background-size: cover;
+      background-position: center;
+      background-color: linear-gradient(135deg, var(--pink-soft), var(--mint));
+    }
+    .hero__media::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.05) 30%, rgba(90,61,67,0.55) 100%);
+    }
+    .hero__badge {
+      position: absolute;
+      top: 12px; left: 12px;
+      z-index: 2;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 0.66rem;
+      font-weight: 600;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: #FFFFFF;
+      background: linear-gradient(135deg, var(--pink-deep), var(--pink));
+      box-shadow: 0 4px 12px -4px rgba(232, 95, 146, 0.6);
+    }
+    .hero__body { padding: 14px 16px 16px; }
+    .hero__title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--text);
+    }
+    .hero__meta {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-top: 6px;
+      gap: 10px;
+    }
+    .hero__price {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--pink-deep);
+    }
+    .hero__note {
+      font-size: 0.74rem;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    /* CTA primário (gradiente pink, brilho deslizante) */
+    .cta-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      margin-top: 14px;
+      padding: 14px 18px;
+      border: 0;
+      border-radius: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #FFFFFF;
+      background: linear-gradient(135deg, var(--pink-soft) 0%, var(--pink) 55%, var(--pink-deep) 100%);
+      box-shadow:
+        0 10px 26px -8px rgba(255, 123, 169, 0.65),
+        0 1px 0 rgba(255,255,255,0.4) inset;
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease), filter .25s var(--ease);
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-primary::after {
+      content: "";
+      position: absolute;
+      top: 0; left: -120%;
+      width: 60%; height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.55), transparent);
+      transform: skewX(-20deg);
+      transition: left .7s var(--ease);
+    }
+    .cta-primary:hover { transform: scale(1.02); filter: brightness(1.04); }
+    .cta-primary:hover::after { left: 130%; }
+    .cta-primary:active { transform: scale(0.985); }
+    .cta-primary i { font-size: 1.05rem; }
+
+    /* ============================================================
+       PROVA SOCIAL (barra compacta)
+    ============================================================ */
+    .social-proof {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px 12px;
+      padding: 10px 12px;
+      margin-top: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.45);
+      border: 1px solid rgba(255,255,255,0.65);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .social-proof .star { color: #F5A623; letter-spacing: -1px; }
+    .social-proof .sep {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--pink-soft);
+      opacity: 0.7;
+    }
+
+    /* ============================================================
+       TÍTULO DE SEÇÃO
+    ============================================================ */
+    .heading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .heading i { color: var(--pink); font-size: 0.95rem; }
+
+    /* ============================================================
+       MAIS VENDIDOS (grid de produtos)
+    ============================================================ */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .product {
+      border-radius: 18px;
+      overflow: hidden;
+      background: var(--cream);
+      border: 1px solid rgba(255,255,255,0.8);
+      box-shadow: 0 6px 18px -12px rgba(255, 123, 169, 0.4);
+      display: flex;
+      flex-direction: column;
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+    }
+    .product:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px -10px rgba(255, 123, 169, 0.45);
+    }
+    .product__thumb {
+      width: 100%;
+      height: 84px;
+      background-size: cover;
+      background-position: center;
+      background-color: var(--pink-soft);
+    }
+    .product__body {
+      padding: 9px 10px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+    .product__name {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      line-height: 1.25;
+      color: var(--text);
+    }
+    .product__price {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--pink-deep);
+    }
+    .product__buy {
+      margin-top: auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 7px 10px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: #FFFFFF;
+      background: linear-gradient(135deg, var(--pink), var(--pink-deep));
+      transition: transform .2s var(--ease), filter .2s var(--ease);
+    }
+    .product__buy:hover { transform: scale(1.03); filter: brightness(1.05); }
+    .product__buy:active { transform: scale(0.96); }
+
+    /* ============================================================
+       COMO PEDIR (3 passos)
+    ============================================================ */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .step {
+      text-align: center;
+      padding: 12px 6px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(255,255,255,0.7);
+    }
+    .step__num {
+      width: 26px; height: 26px;
+      margin: 0 auto 6px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      background: linear-gradient(135deg, var(--pink-soft), var(--pink));
+    }
+    .step__label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .advance-note {
+      margin-top: 9px;
+      text-align: center;
+      font-size: 0.72rem;
+      font-style: italic;
+      color: var(--pink);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       DEPOIMENTO
+    ============================================================ */
+    .testimonial {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(255,255,255,0.7);
+      position: relative;
+    }
+    .testimonial__stars {
+      color: #F5A623;
+      font-size: 0.85rem;
+      letter-spacing: -1px;
+      margin-bottom: 6px;
+    }
+    .testimonial__text {
+      font-size: 0.86rem;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.5;
+      font-style: italic;
+    }
+    .testimonial__author {
+      margin-top: 8px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--pink);
+    }
+
+    /* ============================================================
+       AÇÕES RÁPIDAS COMPACTAS (grid 3)
+    ============================================================ */
+    .actions-compact {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .action-mini {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 6px;
+      border-radius: 16px;
+      text-decoration: none;
+      color: var(--text);
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(255,255,255,0.7);
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease),
+                  border-color .25s var(--ease), background .25s var(--ease);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .action-mini:hover {
+      transform: scale(1.035);
+      border-color: rgba(255, 123, 169, 0.6);
+      background: rgba(255, 255, 255, 0.75);
+      box-shadow: 0 8px 18px -10px rgba(255, 123, 169, 0.4);
+    }
+    .action-mini:active { transform: scale(0.97); }
+    .action-mini__icon {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 1rem;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(255,255,255,0.8);
+    }
+    .action-mini__label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      color: var(--text-dim);
+      text-align: center;
+      line-height: 1.2;
+    }
+    .action-mini--whatsapp .action-mini__icon { color: #25D366; }
+    .action-mini--waze     .action-mini__icon { color: #33CCFF; }
+    .action-mini--site     .action-mini__icon { color: var(--mint); }
+
+    /* ============================================================
+       CTA FINAL (grande)
+    ============================================================ */
+    .cta-final {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 17px 18px;
+      border: 0;
+      border-radius: 22px;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      color: #FFFFFF;
+      background: linear-gradient(135deg, var(--pink-soft) 0%, var(--pink) 50%, var(--pink-deep) 100%);
+      box-shadow:
+        0 14px 30px -10px rgba(255, 123, 169, 0.7),
+        0 1px 0 rgba(255,255,255,0.4) inset;
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease), filter .25s var(--ease);
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-final::after {
+      content: "";
+      position: absolute;
+      top: 0; left: -120%;
+      width: 60%; height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.55), transparent);
+      transform: skewX(-20deg);
+      transition: left .8s var(--ease);
+    }
+    .cta-final:hover { transform: scale(1.02); filter: brightness(1.04); }
+    .cta-final:hover::after { left: 130%; }
+    .cta-final:active { transform: scale(0.985); }
+    .cta-final i { font-size: 1.2rem; }
+
+    /* ============================================================
+       RODAPÉ — Salvar contato + sociais
+    ============================================================ */
+    .save-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid var(--pink);
+      border-radius: 14px;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: var(--pink);
+      background: rgba(255, 123, 169, 0.06);
+      transition: transform .25s var(--ease), background .25s var(--ease), color .25s var(--ease);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .save-btn:hover {
+      transform: scale(1.02);
+      background: var(--pink);
+      color: #FFFFFF;
+    }
+    .save-btn:active { transform: scale(0.98); }
+
+    .footer-row {
+      margin-top: 14px;
+      text-align: center;
+    }
+    .socials {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+    .social {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--text-dim);
+      text-decoration: none;
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(255,255,255,0.7);
+      font-size: 0.95rem;
+      transition: transform .25s var(--ease), color .25s var(--ease),
+                  border-color .25s var(--ease), background .25s var(--ease);
+    }
+    .social:hover {
+      transform: scale(1.12) translateY(-2px);
+      color: var(--pink);
+      border-color: rgba(255,123,169,0.6);
+      background: rgba(255, 123, 169, 0.12);
+    }
+    .social:active { transform: scale(0.94); }
+    .footer__copy {
+      margin-top: 12px;
+      font-size: 0.66rem;
+      letter-spacing: 0.6px;
+      color: rgba(138,106,112,0.7);
+    }
+    .footer__copy b { color: var(--pink); font-weight: 700; }
+
+    /* ============================================================
+       BARRA STICKY (mobile / fixada embaixo)
+    ============================================================ */
+    .sticky-bar {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      z-index: 50;
+      padding:
+        8px 14px
+        calc(env(safe-area-inset-bottom) + 8px);
+      background: rgba(255, 255, 255, 0.85);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      backdrop-filter: blur(14px) saturate(140%);
+      border-top: 1px solid rgba(255,255,255,0.8);
+      box-shadow: 0 -8px 24px -14px rgba(255, 123, 169, 0.4);
+    }
+    .sticky-bar__btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      max-width: 440px;
+      margin: 0 auto;
+      padding: 14px 18px;
+      border: 0;
+      border-radius: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      color: #FFFFFF;
+      background: linear-gradient(135deg, var(--pink) 0%, var(--pink-deep) 100%);
+      box-shadow: 0 8px 20px -8px rgba(255, 123, 169, 0.7);
+      transition: transform .2s var(--ease), filter .2s var(--ease);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .sticky-bar__btn:hover { transform: scale(1.01); filter: brightness(1.05); }
+    .sticky-bar__btn:active { transform: scale(0.985); }
+    .sticky-bar__btn i { font-size: 1.15rem; }
+    /* Em telas grandes, centraliza */
+    @media (min-width: 600px) {
+      .sticky-bar__btn { justify-self: center; }
+    }
+
+    /* ============================================================
+       ANIMAÇÃO DE ENTRADA (fade-in escalonado)
+    ============================================================ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .reveal {
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease) forwards;
+    }
+    .reveal[data-d="1"]  { animation-delay: 0.05s; }
+    .reveal[data-d="2"]  { animation-delay: 0.14s; }
+    .reveal[data-d="3"]  { animation-delay: 0.23s; }
+    .reveal[data-d="4"]  { animation-delay: 0.32s; }
+    .reveal[data-d="5"]  { animation-delay: 0.41s; }
+    .reveal[data-d="6"]  { animation-delay: 0.50s; }
+    .reveal[data-d="7"]  { animation-delay: 0.59s; }
+    .reveal[data-d="8"]  { animation-delay: 0.68s; }
+    .reveal[data-d="9"]  { animation-delay: 0.77s; }
+    .reveal[data-d="10"] { animation-delay: 0.86s; }
+
+    /* Acessibilidade: respeitar pref. de menos movimento */
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { animation: none; opacity: 1; }
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Camadas de fundo -->
+  <div class="bg"></div>
+  <div class="bg__img" id="bgImg"></div>
+  <div class="bg__overlay"></div>
+
+  <!-- CARTÃO -->
+  <main class="card reveal" data-d="1" aria-label="Cartão de visita digital">
+
+    <!-- 1. TOPBAR COMPACTO -->
+    <header class="topbar reveal" data-d="2">
+      <div class="topbar__avatar" id="avatar">
+        <img id="avatarImg" alt="Foto da doceria" />
+        <span class="initials" id="initials">DC</span>
+      </div>
+      <div class="topbar__info">
+        <h1 class="topbar__name" id="name">Doce &amp; Cia</h1>
+        <p class="topbar__tagline" id="role">Brigadeiros · Bolos · Docinhos</p>
+      </div>
+      <span class="pill pill--open" id="statusPill" title="Horário de funcionamento">
+        <span class="pill__dot"></span>
+        <span id="statusText">Aberto</span>
+      </span>
+    </header>
+
+    <!-- 2. HERO PRODUTO DA SEMANA -->
+    <section class="hero reveal" data-d="3" aria-label="Produto em destaque">
+      <div class="hero__media" id="heroMedia">
+        <span class="hero__badge" id="heroBadge">Mais Pedido</span>
+      </div>
+      <div class="hero__body">
+        <h2 class="hero__title" id="heroTitle">Kit Festa · 50 Brigadeiros</h2>
+        <div class="hero__meta">
+          <span class="hero__price" id="heroPrice">R$ 95</span>
+          <span class="hero__note">Sabores variados</span>
+        </div>
+        <a class="cta-primary" id="heroCta" href="#" target="_blank" rel="noopener">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span>Encomendar Agora</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- 3. BARRA DE PROVA SOCIAL -->
+    <div class="social-proof reveal" data-d="4">
+      <span><span class="star">★★★★★</span> <strong id="rating">4,8</strong></span>
+      <span class="sep"></span>
+      <span id="numClientes">+1.200 clientes</span>
+      <span class="sep"></span>
+      <span>Artesanal</span>
+    </div>
+
+    <!-- 4. MAIS VENDIDOS -->
+    <section class="section reveal" data-d="5" aria-label="Mais vendidos">
+      <h3 class="heading"><i class="fa-solid fa-fire"></i> Mais Vendidos</h3>
+      <div class="grid" id="menuGrid"><!-- renderMenu() --></div>
+    </section>
+
+    <!-- 5. COMO PEDIR -->
+    <section class="section reveal" data-d="6" aria-label="Como pedir">
+      <h3 class="heading"><i class="fa-solid fa-list-check"></i> Como Pedir</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step__num">1</div>
+          <div class="step__label">Escolha</div>
+        </div>
+        <div class="step">
+          <div class="step__num">2</div>
+          <div class="step__label">Chame no Zap</div>
+        </div>
+        <div class="step">
+          <div class="step__num">3</div>
+          <div class="step__label">Retire ou Receba</div>
+        </div>
+      </div>
+      <p class="advance-note" id="advanceNote">Encomende com 72h de antecedência</p>
+    </section>
+
+    <!-- 6. DEPOIMENTO -->
+    <section class="section reveal" data-d="7" aria-label="Depoimento de cliente">
+      <div class="testimonial">
+        <div class="testimonial__stars" id="testimonialStars">★★★★★</div>
+        <p class="testimonial__text" id="testimonialText"></p>
+        <p class="testimonial__author" id="testimonialAuthor"></p>
+      </div>
+    </section>
+
+    <!-- 7. AÇÕES RÁPIDAS COMPACTAS -->
+    <section class="section reveal" data-d="8" aria-label="Ações rápidas">
+      <div class="actions-compact">
+        <a class="action-mini action-mini--whatsapp" id="waLink" target="_blank" rel="noopener">
+          <span class="action-mini__icon"><i class="fa-brands fa-whatsapp"></i></span>
+          <span class="action-mini__label">WhatsApp</span>
+        </a>
+        <a class="action-mini action-mini--waze" id="wazeLink" target="_blank" rel="noopener">
+          <span class="action-mini__icon"><i class="fa-solid fa-location-dot"></i></span>
+          <span class="action-mini__label">Localização</span>
+        </a>
+        <a class="action-mini action-mini--site" id="cardapioLink" target="_blank" rel="noopener">
+          <span class="action-mini__icon"><i class="fa-solid fa-book-open"></i></span>
+          <span class="action-mini__label">Cardápio</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- 8. CTA FINAL -->
+    <section class="section reveal" data-d="9">
+      <a class="cta-final" id="ctaFinal" href="#" target="_blank" rel="noopener">
+        <i class="fa-brands fa-whatsapp"></i>
+        <span>Encomendar no WhatsApp</span>
+      </a>
+    </section>
+
+    <!-- 9. RODAPÉ — Salvar + sociais -->
+    <footer class="footer-row reveal" data-d="10">
+      <button class="save-btn" id="saveBtn" type="button">
+        <i class="fa-solid fa-address-card"></i>
+        <span>Salvar Contato</span>
+      </button>
+      <nav class="socials" style="margin-top:12px;" aria-label="Redes sociais">
+        <a class="social" id="igLink" target="_blank" rel="noopener" aria-label="Instagram">
+          <i class="fa-brands fa-instagram"></i>
+        </a>
+        <a class="social" id="ttLink" target="_blank" rel="noopener" aria-label="TikTok">
+          <i class="fa-brands fa-tiktok"></i>
+        </a>
+        <a class="social" id="fbLink" target="_blank" rel="noopener" aria-label="Facebook">
+          <i class="fa-brands fa-facebook-f"></i>
+        </a>
+      </nav>
+      <p class="footer__copy">© <span id="year">2026</span> <b id="brandCopy">Doce &amp; Cia</b> · Doceria Artesanal</p>
+    </footer>
+  </main>
+
+  <!-- 10. BARRA STICKY (mobile) -->
+  <div class="sticky-bar">
+    <a class="sticky-bar__btn" id="stickyBtn" href="#" target="_blank" rel="noopener">
+      <i class="fa-solid fa-bag-shopping"></i>
+      <span>Encomendar</span>
+    </a>
+  </div>
+
+  <script>
+    /* ============================================================
+       CONFIGURAÇÃO — edite tudo aqui
+    ============================================================ */
+    const PERFIL = {
+      nome:        "Doce & Cia",
+      cargo:       "Brigadeiros · Bolos · Docinhos",
+      bio:         "Amor e açúcar em cada mordida. 🍰",
+      whatsapp:    "5511977776666",
+      telefone:    "+55 (11) 97777-6666",
+      email:       "pedidos@doceecia.com.br",
+      site:        "https://doceecia.com.br",
+      wazeLatLng:  "-23.5520,-46.6600",
+      instagram:   "https://instagram.com/doceecia",
+      tiktok:      "https://tiktok.com/@doceecia",
+      facebook:    "https://facebook.com/doceecia",
+
+      // Prova social
+      rating:      4.8,
+      numClientes: 1200,
+      antecedencia:"Encomende com 72h de antecedência",
+
+      // Horários: 0=Dom ... 6=Sáb · null = fechado · {ab,fe} em HHMM
+      horarios: {
+        0: null,                       // Domingo fechado
+        1: { ab: 900, fe: 1900 },      // Seg
+        2: { ab: 900, fe: 1900 },
+        3: { ab: 900, fe: 1900 },
+        4: { ab: 900, fe: 1900 },
+        5: { ab: 900, fe: 1900 },
+        6: { ab: 900, fe: 1900 }       // Sáb
+      },
+
+      // Hero — produto da semana
+      hero: {
+        nome:     "Kit Festa · 50 Brigadeiros",
+        preco:    "R$ 95",
+        img:      "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800&q=80&auto=format",
+        escassez: "Mais Pedido"
+      },
+
+      // Imagens (fundo + perfil)
+      imgFundo:    "https://images.unsplash.com/photo-1551024601-bec78aea704b?w=1400&q=80&auto=format",
+      imgPerfil:   "https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?w=320&h=320&fit=crop&q=80&auto=format",
+
+      // Mais vendidos
+      PRODUTOS: [
+        {
+          nome:  "Brigadeiro Gourmet (un)",
+          preco: "R$ 4",
+          img:   "https://images.unsplash.com/photo-1542826438-bd32f43d626f?w=400&h=300&fit=crop&q=80&auto=format"
+        },
+        {
+          nome:  "Bolo de Pote",
+          preco: "R$ 12",
+          img:   "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400&h=300&fit=crop&q=80&auto=format"
+        },
+        {
+          nome:  "Cupcake Recheado",
+          preco: "R$ 10",
+          img:   "https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=400&h=300&fit=crop&q=80&auto=format"
+        },
+        {
+          nome:  "Docinhos Sortidos (cento)",
+          preco: "R$ 55",
+          img:   "https://images.unsplash.com/photo-1607478900766-efe13248b125?w=400&h=300&fit=crop&q=80&auto=format"
+        }
+      ],
+
+      depoimento: {
+        texto: "Encomendei para o aniversário da minha filha e foi um sucesso! Doces lindos e deliciosos.",
+        nome:  "Patrícia M."
+      }
+    };
+
+    /* ============================================================
+       HELPERS
+    ============================================================ */
+    const $ = (id) => document.getElementById(id);
+    const initials = PERFIL.nome.replace(/&/g, "E").split(/\s+/)
+      .filter(Boolean).slice(0, 2)
+      .map(p => p[0]).join("").toUpperCase();
+
+    // Monta link WhatsApp para um produto (ou mensagem genérica)
+    function waProduto(nome) {
+      return "https://wa.me/" + PERFIL.whatsapp +
+             "?text=" + encodeURIComponent("Olá! Quero encomendar: " + nome + " 🍰");
+    }
+
+    /* ============================================================
+       PREENCHER UI a partir de PERFIL
+    ============================================================ */
+    // Topbar
+    $("name").textContent      = PERFIL.nome;
+    $("role").textContent      = PERFIL.cargo;
+    $("initials").textContent  = initials;
+    $("brandCopy").textContent = PERFIL.nome;
+    $("year").textContent      = new Date().getFullYear();
+
+    // Prova social
+    $("rating").textContent      = PERFIL.rating.toFixed(1).replace(".", ",");
+    $("numClientes").textContent = "+" + PERFIL.numClientes.toLocaleString("pt-BR") + " clientes";
+
+    // Hero
+    $("heroTitle").textContent  = PERFIL.hero.nome;
+    $("heroPrice").textContent  = PERFIL.hero.preco;
+    $("heroBadge").textContent  = PERFIL.hero.escassez;
+    $("heroMedia").style.backgroundImage = `url("${PERFIL.hero.img}")`;
+    $("heroCta").href           = waProduto(PERFIL.hero.nome);
+
+    // Antecedência
+    $("advanceNote").textContent = PERFIL.antecedencia;
+
+    // Depoimento
+    $("testimonialText").textContent   = "“" + PERFIL.depoimento.texto + "”";
+    $("testimonialAuthor").textContent = "— " + PERFIL.depoimento.nome;
+
+    // Links de ação
+    const waMsgGeneric = encodeURIComponent("Olá Doce & Cia! 🧁 Vim pelo cartão digital e gostaria de fazer um pedido.");
+    $("waLink").href       = "https://wa.me/" + PERFIL.whatsapp + "?text=" + waMsgGeneric;
+    $("wazeLink").href     = "https://waze.com/ul?ll=" + encodeURIComponent(PERFIL.wazeLatLng) + "&navigate=yes";
+    $("cardapioLink").href = PERFIL.site;
+
+    // CTA final + sticky
+    $("ctaFinal").href = "https://wa.me/" + PERFIL.whatsapp + "?text=" + waMsgGeneric;
+    $("stickyBtn").href = waProduto(PERFIL.hero.nome);
+
+    // Sociais
+    $("igLink").href = PERFIL.instagram;
+    $("ttLink").href = PERFIL.tiktok;
+    $("fbLink").href = PERFIL.facebook;
+
+    /* ============================================================
+       RENDER MENU (Mais Vendidos)
+    ============================================================ */
+    function renderMenu() {
+      const grid = $("menuGrid");
+      const fallbackGradient = "linear-gradient(135deg, var(--pink-soft), var(--mint))";
+      grid.innerHTML = PERFIL.PRODUTOS.map((p) => `
+        <article class="product">
+          <div class="product__thumb"
+               style="background-image:url('${p.img}');"
+               onerror="this.style.backgroundImage='${fallbackGradient}';this.onerror=null;">
+          </div>
+          <div class="product__body">
+            <span class="product__name">${p.nome}</span>
+            <span class="product__price">${p.preco}</span>
+            <a class="product__buy" href="${waProduto(p.nome)}" target="_blank" rel="noopener">
+              <i class="fa-brands fa-whatsapp"></i> Pedir
+            </a>
+          </div>
+        </article>
+      `).join("");
+
+      // Fallback por thumb (caso imagem quebre — gradiente temático)
+      grid.querySelectorAll(".product__thumb").forEach((el) => {
+        const url = el.style.backgroundImage.slice(5, -2).replace(/['"]/g, "");
+        if (url) {
+          const probe = new Image();
+          probe.onerror = () => {
+            el.style.backgroundImage = fallbackGradient;
+          };
+          probe.src = url;
+        }
+      });
+    }
+    renderMenu();
+
+    /* ============================================================
+       STATUS ABERTO/FECHADO
+    ============================================================ */
+    function atualizarStatus() {
+      const agora    = new Date();
+      const dia      = agora.getDay();        // 0=Dom ... 6=Sáb
+      const hhmm     = agora.getHours() * 100 + agora.getMinutes();
+      const h        = PERFIL.horarios[dia];
+      const pill     = $("statusPill");
+      const txt      = $("statusText");
+
+      if (h && hhmm >= h.ab && hhmm < h.fe) {
+        pill.classList.add("pill--open");
+        pill.classList.remove("pill--closed");
+        txt.textContent = "Aberto agora ✓";
+      } else {
+        pill.classList.add("pill--closed");
+        pill.classList.remove("pill--open");
+        txt.textContent = "Fechado";
+      }
+    }
+    atualizarStatus();
+    // Recheca a cada 5 min
+    setInterval(atualizarStatus, 5 * 60 * 1000);
+
+    /* ============================================================
+       IMAGEM DE FUNDO (com probe + fallback)
+    ============================================================ */
+    const bg = $("bgImg");
+    bg.style.backgroundImage = `url("${PERFIL.imgFundo}")`;
+    const bgProbe = new Image();
+    bgProbe.onload  = () => bg.classList.add("is-loaded");
+    bgProbe.src     = PERFIL.imgFundo;
+
+    /* ============================================================
+       AVATAR (com fallback de iniciais)
+    ============================================================ */
+    const avatarWrap = $("avatar");
+    const avatarImg  = $("avatarImg");
+    avatarImg.onerror = () => avatarWrap.classList.add("no-img");
+    avatarImg.src = PERFIL.imgPerfil;
+
+    /* ============================================================
+       vCard REAL — gera e baixa contato.vcf
+    ============================================================ */
+    const vcard = [
+      "BEGIN:VCARD",
+      "VERSION:3.0",
+      `N:${PERFIL.nome};;;;`,
+      `FN:${PERFIL.nome}`,
+      "ORG:Doce & Cia",
+      "TITLE:Doceria Artesanal",
+      `TEL;TYPE=CELL:${PERFIL.telefone}`,
+      `EMAIL:${PERFIL.email}`,
+      `URL:${PERFIL.site}`,
+      `NOTE:${PERFIL.bio}`,
+      "END:VCARD"
+    ].join("\r\n");
+
+    $("saveBtn").addEventListener("click", () => {
+      const blob = new Blob([vcard], { type: "text/vcard;charset=utf-8" });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement("a");
+      a.href = url;
+      a.download = "contato.vcf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+    });
+  </script>
+</body>
+</html>
